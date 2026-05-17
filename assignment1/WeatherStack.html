@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<title>Weather</title>
+		<style>
+			body { font-family: Arial; text-align: center; margin-top: 50px; background: #eef2f7; }
+			input, button { padding: 8px 12px; font-size: 16px; margin: 5px; }
+			.temp { font-size: 40px; font-weight: bold; margin: 10px 0; }
+			img { width: 50px; }
+			.error { color: red; }
+		</style>
+	</head>
+	<body>
+		<h2>⛅ Weather</h2>
+		<input id="city" placeholder="City" value="Ramallah">
+			<button onclick="getWeather()">Get</button>
+			<div id="result">Loading Ramallah...</div>
+
+			<script>
+				const API_KEY = '6364088654c6a5523f5877422ab821ce'; // API key from WeatherStack
+
+				async function getWeather() {
+				let city = document.getElementById('city').value.trim();   // Get city name from input box
+				let res = document.getElementById('result');              // Get the div where weather will appear
+				res.innerHTML = 'Loading...';                             // Show loading message
+
+				let url = `https://api.weatherstack.com/current?access_key=${API_KEY}&query=${encodeURIComponent(city)}&units=m`; // Build REST API URL
+				let resp = await fetch(url);                              // Send HTTP GET request
+				let data = await resp.json();                             // Parse JSON response
+
+				if (data.success === false) {                             // Check if API returned an error
+				res.innerHTML = `<span class="error">Error: ${data.error?.info || 'Not found'}</span>`;
+				} else {
+				res.innerHTML = `
+				<img src="${data.current.weather_icons[0]}">
+					<br>
+						<div class="temp">${data.current.temperature}°C</div>
+						<div>${data.current.weather_descriptions[0]}</div>
+						<div>📍 ${data.location.name}, ${data.location.country}</div>
+						<div>Feels: ${data.current.feelslike}°C | Wind: ${data.current.wind_speed} km/h | Humidity: ${data.current.humidity}%</div>
+						`;
+						}
+						}
+						getWeather();  // Load weather for default city (Ramallah) on page start
+					</script>
+		</body>
+</html>
